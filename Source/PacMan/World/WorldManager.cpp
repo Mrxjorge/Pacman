@@ -26,6 +26,17 @@ void AWorldManager::ResetWorldHeight() const
 	}
 }
 
+void AWorldManager::ActivateAllNormalCollectables()
+{
+	TArray<AActor*> FloorActors;
+	UGameplayStatics::GetAllActorsOfClass(this, AFloor::StaticClass(), FloorActors);
+	for(AActor* Actor : FloorActors)
+	{
+		AFloor* F = Cast<AFloor>(Actor);
+		F->ControlColllectable(true, ECollectable::Normal);
+	}
+}
+
 void AWorldManager::SubscribeFloor(AFloor* InFloor)
 {
 	Floor.Add(InFloor);

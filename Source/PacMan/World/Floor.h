@@ -42,22 +42,31 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* FloorForm = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
+	UMaterial* NormalCollectable = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	UMaterial* SpecialCollectable = nullptr;
+
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Form = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	class UBoxComponent* BoxComponent = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Collectable = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateFloor();
 
+	void ControlColllectable(const bool Visibility, const ECollectable Type);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

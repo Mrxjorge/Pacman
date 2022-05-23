@@ -26,6 +26,9 @@ public:
 	UFUNCTION(CallInEditor)
 	void ResetWorldHeight() const;
 
+	UFUNCTION(CallInEditor)
+	void ActivateAllNormalCollectables();
+
 	void SubscribeFloor(AFloor* InFloor);
 
 	void SubscribeCharacter(APacManCharacter* InCharacter);

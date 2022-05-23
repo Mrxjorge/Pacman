@@ -12,12 +12,12 @@ AFloor::AFloor(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitia
 	PrimaryActorTick.bCanEverTick = true;
 	Form = CreateDefaultSubobject<UStaticMeshComponent>("Form");
 	Form->SetupAttachment(RootComponent);
-	Collectable = CreateDefaultSubobject<UStaticMeshComponent>("Collectable");
-	Collectable->SetupAttachment(Form);
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComp");
-	BoxComponent->SetupAttachment(Collectable);
-	BoxComponent->SetRelativeLocation(FVector(0, 0, 0));
-	BoxComponent->SetBoxExtent(FVector(50, 50, 50));
+	BoxComponent->SetupAttachment(Form);
+	BoxComponent->SetRelativeLocation(FVector(0, 0, 100));
+	BoxComponent->SetBoxExtent(FVector(100, 100, 100));
+	Collectable = CreateDefaultSubobject<UStaticMeshComponent>("Collectable");
+	Collectable->SetupAttachment(BoxComponent);
 }
 
 // Called when the game starts or when spawned
@@ -57,10 +57,26 @@ void AFloor::UpdateFloor()
 	}
 }
 
+void AFloor::ControlColllectable(const bool Visibility, const ECollectable Type)
+{
+	Collectable->SetVisibility(Visibility);
+	if(!Visibility)return;
+	switch (Type)
+	{
+		case ECollectable::Normal:
+			Collectable->SetMaterial(0, NormalCollectable);
+			break;
+		case ECollectable::Special:
+			Collectable->SetMaterial(0, SpecialCollectable);
+			break;
+		default:
+			break;
+	}
+}
+
 // Called every frame
 void AFloor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
