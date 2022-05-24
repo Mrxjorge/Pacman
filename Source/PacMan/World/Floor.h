@@ -34,7 +34,13 @@ public:
 	EForm FormStatus = EForm::Floor;
 
 	UPROPERTY()
-	ECollectable CollectableTpe = ECollectable::None;
+	ECollectable CollectableType = ECollectable::None;
+
+	UPROPERTY()
+	bool bCollected = false;
+
+	UPROPERTY(EditAnywhere)
+	bool bIsGhostSpawn = false;
 
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* WallForm = nullptr;
@@ -60,11 +66,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateFloor();
 
-	void ControlColllectable(const bool Visibility, const ECollectable Type);
+	void ControlColllectable(const bool Visibility, const ECollectable Type = ECollectable::None);
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	UFUNCTION()
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	
 protected:
 	
 	// Called when the game starts or when spawned

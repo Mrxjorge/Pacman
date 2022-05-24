@@ -11,19 +11,24 @@ AFloor::AFloor(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitia
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Form = CreateDefaultSubobject<UStaticMeshComponent>("Form");
-	Form->SetupAttachment(RootComponent);
+	RootComponent = Form;
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComp");
 	BoxComponent->SetupAttachment(Form);
 	BoxComponent->SetRelativeLocation(FVector(0, 0, 100));
 	BoxComponent->SetBoxExtent(FVector(100, 100, 100));
+	BoxComponent->SetGenerateOverlapEvents(true);
 	Collectable = CreateDefaultSubobject<UStaticMeshComponent>("Collectable");
-	Collectable->SetupAttachment(BoxComponent);
+	Collectable->SetupAttachment(Form);
+	Collectable->SetRelativeLocation(FVector(0, 0, 50));
+	Collectable->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 }
 
 // Called when the game starts or when spawned
 void AFloor::BeginPlay()
 {
 	AWorldManager::GetWorldManager(this)->SubscribeFloor(this);
+	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AFloor::BeginOverlap);
+	ControlColllectable(false);
 	Super::BeginPlay();
 }
 
@@ -60,7 +65,9 @@ void AFloor::UpdateFloor()
 void AFloor::ControlColllectable(const bool Visibility, const ECollectable Type)
 {
 	Collectable->SetVisibility(Visibility);
+	bCollected = !Visibility;
 	if(!Visibility)return;
+	CollectableType = Type;
 	switch (Type)
 	{
 		case ECollectable::Normal:
@@ -74,9 +81,14 @@ void AFloor::ControlColllectable(const bool Visibility, const ECollectable Type)
 	}
 }
 
-// Called every frame
-void AFloor::Tick(float DeltaTime)
+void AFloor::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
 {
-	Super::Tick(DeltaTime);
+	APacManCharacter* Character = Cast<APacManCharacter>(OtherActor);
+	if(!Character) return;
+	if(bCollected) return;
+	ControlColllectable(false);
+	Character->ControlPoints(CollectableType == ECollectable::Normal ? 1 : 5);
+	bCollected = true;
 }
-

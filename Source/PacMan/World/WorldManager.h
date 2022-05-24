@@ -40,5 +40,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+private:
+
+	int PointsCount = 0;
 	
 };

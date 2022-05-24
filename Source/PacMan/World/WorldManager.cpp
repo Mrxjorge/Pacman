@@ -50,12 +50,14 @@ void AWorldManager::SubscribeCharacter(APacManCharacter* InCharacter)
 // Called when the game starts or when spawned
 void AWorldManager::BeginPlay()
 {
-	TArray<AActor*> FloorActors;
-	UGameplayStatics::GetAllActorsOfClass(this, AFloor::StaticClass(), FloorActors);
-	for (AActor* F : FloorActors)
+	FTimerHandle TH;
+	GetWorld()->GetTimerManager().SetTimer(TH, [=]()
 	{
-		Floor.Add(Cast<AFloor>(F));
-	}
+		int Num = FMath::RandRange(0, Floor.Num() - 1);
+		if(Floor[Num]->FormStatus == EForm::Wall || Floor[Num]->bIsGhostSpawn) return;
+		Floor[Num]->ControlColllectable(true, PointsCount >= 20 ? ECollectable::Special : ECollectable::Normal);
+		PointsCount = PointsCount >= 20 ? 0 : PointsCount + 1;
+	}, 1.f, true);
 	Super::BeginPlay();
 }
 
