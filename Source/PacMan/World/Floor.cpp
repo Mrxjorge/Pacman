@@ -11,7 +11,7 @@ AFloor::AFloor(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitia
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Form = CreateDefaultSubobject<UStaticMeshComponent>("Form");
-	RootComponent = Form;
+	SetRootComponent(Form);
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComp");
 	BoxComponent->SetupAttachment(Form);
 	BoxComponent->SetRelativeLocation(FVector(0, 0, 100));

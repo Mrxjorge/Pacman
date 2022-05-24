@@ -13,5 +13,11 @@ UCLASS()
 class PACMAN_API AGhostController : public AAIController
 {
 	GENERATED_BODY()
+
+public:
+
+	void ChasePlayer(AActor* Player);
+
+	void GoToLocation(FVector Location);
 	
 };
