@@ -6,6 +6,15 @@
 #include "AIController.h"
 #include "GhostController.generated.h"
 
+UENUM()
+enum class EGhostType : uint8
+{
+	Wanderer,
+	Chaser
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnObjectiveReached, const EGhostType, Type);
+
 /**
  * 
  */
@@ -19,5 +28,11 @@ public:
 	void ChasePlayer(AActor* Player);
 
 	void GoToLocation(FVector Location);
+	
+	FOnObjectiveReached OnObjectiveReached;
+
+	EGhostType GhostType = EGhostType::Wanderer;
+
+	void Initialize(const EGhostType InType);
 	
 };

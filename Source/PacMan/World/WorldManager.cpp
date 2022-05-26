@@ -64,9 +64,31 @@ void AWorldManager::BeginPlay()
 	FTimerHandle TH2;
 	GetWorld()->GetTimerManager().SetTimer(TH2, [=]()
 	{
-		SpawnGhost();
+		if(!GhostA.HasGhost())
+		{
+			SpawnGhost(&GhostA);
+			GhostA.Controller->Initialize(EGhostType::Wanderer);
+			GhostA.Controller->OnObjectiveReached.AddDynamic(this, &AWorldManager::GhostReachedObjective);
+			GhostA.Controller->MoveToLocation(GetRandomLocation());
+		}
 	}, 15, true);
 	Super::BeginPlay();
+}
+
+FVector AWorldManager::GetRandomLocation()
+{
+	bool bFloorFound = false;
+	AFloor* FloorActor = nullptr;
+	while (!bFloorFound)
+	{
+		const int Num = FMath::RandRange(0, Floor.Num() - 1);
+		if(Floor[Num]->FormStatus == EForm::Floor)
+		{
+			bFloorFound = true;
+			FloorActor = Floor[Num];
+		}
+	}
+	return FloorActor->GetActorLocation();
 }
 
 // Called every frame
@@ -84,25 +106,23 @@ AWorldManager* AWorldManager::GetWorldManager(UObject* Context)
 	return  Cast<AWorldManager>(Array[0]);
 }
 
-AGhostController* AWorldManager::SpawnGhost()
+void AWorldManager::SpawnGhost(FGhostHandle* Fill)
 {
-	if(Ghosts.Num() >= 2) return nullptr;
-	auto CreateGhost = [=]()
+	const FVector SpawnLocation = GetActorLocation();
+	AGhostCharacter* Ghost = Cast<AGhostCharacter>(GetWorld()->SpawnActor(GhostClass, &SpawnLocation, &FRotator::ZeroRotator, FActorSpawnParameters()));
+	AGhostController* Controller = Ghost->GetController<AGhostController>();
+	Fill->Copy( FGhostHandle(Ghost, Controller));
+}
+
+void AWorldManager::GhostReachedObjective(EGhostType GhostType)
+{
+	switch (GhostType)
 	{
-		FVector SpawnLocation = GetActorLocation();
-		AGhostCharacter* Ghost = Cast<AGhostCharacter>(GetWorld()->SpawnActor(GhostClass, &SpawnLocation, &FRotator::ZeroRotator, FActorSpawnParameters()));
-		AGhostController* Controller = Ghost->GetController<AGhostController>();
-		return FGhostHandle(Ghost, Controller);
-	};
-	FGhostHandle Ghost = CreateGhost();
-	if(Ghosts.Num() == 0)
-	{
-		Ghosts.Add(Ghost);
+		case EGhostType::Wanderer:
+			GhostA.Controller->MoveToLocation(GetRandomLocation());
+			break;
+		default:
+			break;
 	}
-	else if(Ghosts.Num() == 1)
-	{
-		Ghosts.Add(Ghost);
-	}
-	return  Ghost.Controller;
 }
 

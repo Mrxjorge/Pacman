@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "GhostCharacter.generated.h"
 
+DECLARE_DELEGATE(FOnGhostReachedPlayer);
+
 UCLASS()
 class PACMAN_API AGhostCharacter : public ACharacter
 {
@@ -25,5 +27,12 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	FOnGhostReachedPlayer OnGhostReachedPlayer;
+
+private:
+
+	UFUNCTION()
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
 };

@@ -32,6 +32,17 @@ struct FGhostHandle
 		this->Controller = nullptr;
 		this->Character = nullptr;
 	}
+
+	bool HasGhost() const
+	{
+		return this->Controller && this->Character;
+	}
+
+	void Copy(FGhostHandle Source)
+	{
+		this->Controller = Source.Controller;
+		this->Character = Source.Character;
+	}
 	
 };
 
@@ -67,10 +78,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AGhostCharacter> GhostClass;
 
-	UPROPERTY()
-	TArray<FGhostHandle> Ghosts;
+	FGhostHandle GhostA = FGhostHandle();
 
-	AGhostController* SpawnGhost();
+	FGhostHandle GhostB = FGhostHandle();
+
+	void SpawnGhost(FGhostHandle* Fill);
+
+	UFUNCTION()
+	void GhostReachedObjective(EGhostType GhostType);
 
 protected:
 	// Called when the game starts or when spawned
@@ -82,5 +97,7 @@ private:
 	USceneComponent* Root = nullptr;
 
 	int PointsCount = 0;
+
+	FVector GetRandomLocation();
 	
 };
